@@ -1,0 +1,51 @@
+name: Generate Best PDF
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate PDF
+        run: python generate_best_pdf.py
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: best-pdf-in-the-world
+          path: best_pdf_in_the_world.pdf
+
+      - name: Create Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "The Best PDF in the World"
+          body: |
+            🎨 A hand-crafted PDF generated entirely with raw Python bytecode.
+            
+            No PDF libraries or tools were used — just pure PDF specification written byte by byte.
+            
+            ## Contents
+            - Cover Page with gradient design
+            - The Art of Geometry
+            - Color Theory & Palettes
+            - The Golden Ratio
+            - Data Visualization
+            - Typography & Design
+            - Fractals & Patterns
+            - The Science of Light
+            - Conclusion
+          files: best_pdf_in_the_world.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
